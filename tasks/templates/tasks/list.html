@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<style>
+
+	body {
+        background-color: #3E4A5C;
+        background-attachment: fixed;
+        background-size: cover;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        box-sizing: border-box;
+        border-radius: 10px;
+    }
+
+    input::placeholder {
+        color: #d3d3d5;
+    }
+
+    h1 {
+        text-align: center;
+        text-color: #ffff;
+        font-size: 80px;
+        color: white;
+        font-weight: bold;
+    }
+
+    .submit {
+        background-color: #6BA3E8;
+    }
+
+    .center-column {
+        width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: rgba(0, 0, 0, 0.72);
+        border-radius: 50px;
+        box-shadow: 2px 2px 20px 0px rgba(0, 0, 0, 0.75);
+    }
+
+    .item-row {
+        background-color: rgba(184, 189, 224, 1);
+        margin: 10px;
+        padding: 20px;
+        border-radius: 3px;
+        color: rgba(0, 0, 0, 1);
+        font-size: 16px;
+        box-shadow: 0px -1px 10px -4px rgba(0, 0, 0, 0.75);
+        transition: transform 0.3s ease-in-out;
+    }
+    
+    .item-row.new-task {
+        transform: scale(1.1); /* Puedes ajustar el valor según prefieras */
+    }
+
+    .btn-update,
+    .btn-delete {
+      margin-right: 10px;
+      font-color: white;
+    }
+    .check-icon {
+        color: #28a745; /* Color verde para el check */
+        font-size: 18px; /* Tamaño del icono */
+        margin-right: 5px;
+    }
+    #login {
+        color: white;
+        font-size: 18px;
+        float: right;
+        margin-right: 15px;
+        margin-left: 10px;
+    }
+
+    .username {
+        color: white;
+        font-size: 18px;
+        float: right;
+        margin-right: 15px;
+        margin-left: 10px;
+    }
+</style>
+</head>
+<body>
+    {% if user.is_authenticated %}
+
+    <a href="{% url 'ingresar' %}" id="login">Salir</a>
+    <h3 class="username">¡Hola {{ user.username | upper}}!</h3>
+
+{%else%}
+    <a href="{% url 'ingresar' %}" id="login">Iniciar Sesion</a>
+    <a href="{% url 'registrar_usuario' %}" class="btn-registro">Registrarse</a>    
+{%endif%}
+
+<div class="center-column">
+    <h1>Tareas</h1>
+    <form method="POST" action="/">
+        {% csrf_token %}
+        {{form.titulo}}
+        <input type="submit" class="btn btn-primary" value="Crear Tarea">
+    </form>
+
+    {% for task in tasks %}
+            <div class="item-row">
+                <a href="{% url 'actualizar_tarea' task.id %}" class="btn btn-actualizar">Actualizar</a>
+                <a href="{% url 'eliminar_tarea' task.id %}" class="btn btn-eliminar">Eliminar</a>
+                {% if task.Completar %}
+                    <span class="check-icon">&#10003;</span>
+                    <a>Completada</a>
+                    <p><strike>{{ task.titulo }}</strike></p>
+                {% else %}
+                    <p>{{ task.titulo }}</p>
+                {% endif %}
+            </div>
+    {% endfor %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+            const itemRows = document.querySelectorAll('.item-row');
+    
+            form.addEventListener('submit', function () {
+                // Al enviar el formulario, agregar la clase 'new-task' a todas las filas de tarea
+                itemRows.forEach(row => row.classList.add('new-task'));
+    
+                // Después de un tiempo (puedes ajustar el valor), quitar la clase 'new-task'
+                setTimeout(function () {
+                    itemRows.forEach(row => row.classList.remove('new-task'));
+                }, 300);
+            });
+        });
+    </script>
+</body>
+
